@@ -1,0 +1,1 @@
+../../AeroGear/AeroGear-iOS/AeroGear-iOS/pipeline/AGFilterConfiguration.h

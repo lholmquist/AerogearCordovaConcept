@@ -1,0 +1,14 @@
+
+SPEC CHECKSUMS: 
+  AFNetworking: b21c1252d437fd322e7db1caa93b163d76a362cb
+  AeroGear: 0d11a7f78190d3e5e48c7c718f97108177427279
+
+COCOAPODS: 0.15.1
+
+DEPENDENCIES: 
+- AeroGear (= 1.0.0.M2)
+
+PODS: 
+- AFNetworking (1.0RC1)
+- AeroGear (1.0.0.M2): 
+  - AFNetworking (= 1.0RC1)
