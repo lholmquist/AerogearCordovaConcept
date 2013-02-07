@@ -12,4 +12,8 @@
 
 - (void) read:(CDVInvokedUrlCommand *)command;
 
+- (void) save:(CDVInvokedUrlCommand *)command;
+
+- (void) remove:(CDVInvokedUrlCommand *)command;
+
 @end

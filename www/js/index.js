@@ -16,6 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+ var thing = AeroGear.Pipeline();
+        var pipe = thing.add({
+            "name": "name",
+            type: "Cordova",
+            settings: {
+                baseURL: "http://us.battle.net/api/wow/",
+                "endpoint": "realm/status"
+            }
+        }).pipes.name;
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -37,19 +48,49 @@ var app = {
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
-        var thing = AeroGear.Pipeline({type:"Cordova"});
-        var pipe = thing.add("name").pipes.name;
-        pipe.read({success:function( data ) {
-                  console.log("Yea");
-                  console.log(data); }
-                  ,error: function(err){console.log("bah")}});
+        $( "#save" ).on( "click", callSave );
+        $( "#remove" ).on( "click", callRemove );
+        loadData();
     }
 };
+
+
+function loadData() {
+    pipe.read({
+        success:function( data ) {
+            var outsideList = $( "#realms" );
+            data.realms.forEach( function( value ){
+                outsideList.append( "<li>" + value.name + "</li>" );
+            });
+            outsideList.listview( "refresh" );
+        },
+        error: function(err){
+            console.log("bah");
+        }
+    });
+}
+
+function callRemove() {
+    pipe.remove( 1, {
+        success: function( data ) {
+            console.log( data );
+        },
+        error: function( error ) {
+            alert( error );
+        }
+    });
+}
+
+function callSave() {
+    pipe.save({ "name": "value" }, {
+            success: function( data ) {
+                console.log( data );
+            },
+            error: function( error ) {
+                alert( error );
+            }
+        });
+}
+
+
+

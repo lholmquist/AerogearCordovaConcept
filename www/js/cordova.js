@@ -40,6 +40,18 @@
         this.getRecordId = function() {
             return recordId;
         };
+
+        this.getName = function() {
+            return pipeName;
+        };
+
+        this.getEndpoint = function() {
+            return endpoint;
+        };
+
+        this.getBaseUrl = function() {
+            return settings.baseURL ? settings.baseURL : endpoint;
+        };
     };
 
     // Public Methods
@@ -80,8 +92,7 @@
             url,
             success,
             error,
-            extraOptions,
-            hackyOptions;
+            extraOptions;
 
         options = options || {};
 
@@ -115,7 +126,6 @@
         };
         extraOptions = {
             type: "GET",
-            args: [],
             data: options.query,
             success: success,
             error: error,
@@ -124,14 +134,14 @@
             complete: options.complete
         };
 
-        hackyOptions = $.extend( {}, this.getConnectionSettings(), extraOptions );
+        //hackyOptions = $.extend( {}, this.getConnectionSettings(), extraOptions );
 
         cordova.exec(
-            hackyOptions.success,
-            hackyOptions.error,
+            success,
+            error,
             "AGPlugin",
             "read",
-            hackyOptions.args || []
+            [ this.getName(), this.getBaseUrl(), this.getEndpoint(), this.getRecordId() ] //nice to be a json object
         );
 
         //AeroGear.cordova.pipeline.read( $.extend( {}, this.getConnectionSettings(), extraOptions ) );
@@ -178,10 +188,10 @@
         toUpdate.data.title = "Updated Task";
         myPipe.save( toUpdate );
      */
-    AeroGear.Pipeline.adapters.Rest.prototype.save = function( data, options ) {
+    AeroGear.Pipeline.adapters.Cordova.prototype.save = function( data, options ) {
         var that = this,
             recordId = this.getRecordId(),
-            ajaxSettings = this.getAjaxSettings(),
+            connectionSettings = this.getConnectionSettings(),
             type,
             url,
             success,
@@ -193,9 +203,9 @@
         type = data[ recordId ] ? "PUT" : "POST";
 
         if ( data[ recordId ] ) {
-            url = ajaxSettings.url + "/" + data[ recordId ];
+            url = connectionSettings.url + "/" + data[ recordId ];
         } else {
-            url = ajaxSettings.url;
+            url = connectionSettings.url;
         }
 
         success = function( data ) {
@@ -237,7 +247,13 @@
             complete: options.complete
         };
 
-        return AeroGear.ajax( this, $.extend( {}, ajaxSettings, extraOptions ) );
+        cordova.exec(
+            success,
+            error,
+            "AGPlugin",
+            "save",
+            [ "value" ]
+        );
     };
 
     /**
@@ -279,10 +295,10 @@
         // Delete all remaining data from the server associated with this pipe
         myPipe.remove();
      */
-    AeroGear.Pipeline.adapters.Rest.prototype.remove = function( toRemove, options ) {
+    AeroGear.Pipeline.adapters.Cordova.prototype.remove = function( toRemove, options ) {
         var that = this,
             recordId = this.getRecordId(),
-            ajaxSettings = this.getAjaxSettings(),
+            connectionSettings = this.getConnectionSettings(),
             delPath = "",
             delId,
             url,
@@ -302,7 +318,7 @@
         options = options || {};
 
         delPath = delId ? "/" + delId : "";
-        url = ajaxSettings.url + delPath;
+        url = connectionSettings.url + delPath;
 
         success = function( data ) {
             var stores,
@@ -343,6 +359,12 @@
             complete: options.complete
         };
 
-        return AeroGear.ajax( this, $.extend( {}, ajaxSettings, extraOptions ) );
+        cordova.exec(
+            success,
+            error,
+            "AGPlugin",
+            "remove",
+            [ "value" ]
+        );
     };
 })( AeroGear, jQuery, uuid );
